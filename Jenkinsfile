@@ -14,6 +14,7 @@ pipeline {
         }
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]){
         withSonarQubeEnv('SonarQubeScanner') {
+          //slackSend (color: '#FFFF00', message: "STARTING SONARQUBE SCAN -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
           sh " ${scannerHome}/bin/sonar-scanner \
           -Dsonar.projectKey=CliXX-App   \
           -Dsonar.login=${SONAR_TOKEN} "
