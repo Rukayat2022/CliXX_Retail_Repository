@@ -3,7 +3,7 @@
     hosts: localhost
     connection: local
     vars:
-      instance_id: wordpressdbclixxjenkins
+      instance_id: wordpressdbyeni
       db_snapshot: wordpressdbclixxjenkins
       security_group: sg-0de1a54eb33c2e424
     tasks:
