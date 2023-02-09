@@ -4,7 +4,7 @@
     connection: local
     vars:
       instance_id: wordpressdbyeni
-      db_snapshot: wordpressdbclixxjenkins
+      db_snapshot: wordpressdbyeni
       security_group: sg-0de1a54eb33c2e424
     tasks:
        - name: Restore DB from snapshot
