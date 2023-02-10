@@ -7,6 +7,7 @@ pipeline {
     stages {
         stage ('Sonarcube Scan') {
         steps {
+          slackSend (color: '#FFFF00', message: "STARTING SONARQUBE SCAN -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
          script {
           scannerHome = tool 'sonarqube'
         }
@@ -21,6 +22,7 @@ pipeline {
 }
  stage('Quality Gate') {
             steps {
+              slackSend (color: '#FFFF00', message: "QUALITY GATE CHECK -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
                 timeout(time: 3, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
             }
@@ -28,6 +30,7 @@ pipeline {
         }
           stage ('Build Docker Image') {
           steps {
+            slackSend (color: '#FFFF00', message: "BUILD DOCKER IMAGE AND PUSH TO ECR -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             // script{
             //  dockerHome= tool 'docker-inst'
             // }
@@ -37,6 +40,7 @@ pipeline {
         }
   stage ('Starting Docker Image') {
           steps {
+            slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE FOR TESTING -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
               if ( docker ps|grep clixx-cont ) then
                  echo "Docker image exists, killing it"
@@ -51,6 +55,7 @@ pipeline {
         }
   stage ('Restore CliXX Database') {
           steps {
+            slackSend (color: '#FFFF00', message: "RESTORING CliXX DATABASE - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
             python3 -m venv python3-virtualenv
             source python3-virtualenv/bin/activate
@@ -64,6 +69,7 @@ pipeline {
         }
   stage ('Configure DB Instance') {
           steps {
+            slackSend (color: '#FFFF00', message: "CONFIGURE DB INSTANCE - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
                USERNAME='wordpressuser'
                PASSWORD='W3lcome123'
@@ -78,6 +84,7 @@ pipeline {
         }
       stage ('Tear Down CliXX Docker Image and Database') {
           steps {
+            slackSend (color: '#FFFF00', message: "DEPLOYMENT TEAR DOWN PROMPT - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Tear Down Environment?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Tear Down Environment?', name: 'confirm'] ])
              }
@@ -95,6 +102,7 @@ pipeline {
         }
         stage ('Log Into ECR and push the newly created Docker') {
           steps {
+            slackSend (color: '#FFFF00', message: "LOGGING INTO ECR AND PUSHING THE NEWLY CREATED DOCKER - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
