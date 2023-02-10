@@ -38,21 +38,38 @@ pipeline {
             sh "docker build . -t clixx-image:$VERSION "
           }
         }
-  stage ('Starting Docker Image') {
-          steps {
-            // slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE FOR TESTING -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-              sh '''
-              if ( docker ps|grep clixx-cont ) then
-                 echo "Docker image exists, killing it"
-                 docker stop clixx-cont
-                 docker rm clixx-cont
-                 docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION
-              else
-                 docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION 
-              fi
-              '''
-          }
+
+  // stage ('Starting Docker Image') {
+  //         steps {
+  //           // slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE FOR TESTING -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+  //             sh '''
+  //             if ( docker ps|grep clixx-cont ) then
+  //                echo "Docker image exists, killing it"
+  //                docker stop clixx-cont
+  //                docker rm clixx-cont
+  //                docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION
+  //             else
+  //                docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION 
+  //             fi
+  //             '''
+  //         }
+  //       }
+     stage ('Starting Docker Image') {
+        steps {
+            slackSend (color: '#FFFF00', message: "Creating and Starting Docker Image - RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
+            sh '''
+            if ( docker ps|grep clixx-cont ) then
+               echo "Docker image exists, killing it"
+               docker stop clixx-cont
+               docker rm clixx-cont
+               docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION
+            else
+               docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION 
+            fi
+            '''
         }
+      }
   stage ('Restore CliXX Database') {
           steps {
             // slackSend (color: '#FFFF00', message: "RESTORING CliXX DATABASE - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
