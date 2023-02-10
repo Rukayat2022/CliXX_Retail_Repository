@@ -14,7 +14,7 @@ pipeline {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]){
         withSonarQubeEnv('SonarQubeScanner') {
           sh " ${scannerHome}/bin/sonar-scanner \
-          -Dsonar.projectKey=CliXX-App-Rukayat   \
+          -Dsonar.projectKey=CliXX-App-Mike   \
           -Dsonar.login=${SONAR_TOKEN} "
         }
         }
@@ -30,7 +30,7 @@ pipeline {
         }
           stage ('Build Docker Image') {
           steps {
-            slackSend (color: '#FFFF00', message: "BUILD DOCKER IMAGE AND PUSH TO ECR -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend (color: '#FFFF00', message: "BUILD DOCKER IMAGE -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             // script{
             //  dockerHome= tool 'docker-inst'
             // }
@@ -38,47 +38,29 @@ pipeline {
             sh "docker build . -t clixx-image:$VERSION "
           }
         }
-
-  // stage ('Starting Docker Image') {
-  //         steps {
-  //           // slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE FOR TESTING -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-  //             sh '''
-  //             if ( docker ps|grep clixx-cont ) then
-  //                echo "Docker image exists, killing it"
-  //                docker stop clixx-cont
-  //                docker rm clixx-cont
-  //                docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION
-  //             else
-  //                docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION 
-  //             fi
-  //             '''
-  //         }
-  //       }
-     stage ('Starting Docker Image') {
-        steps {
-            slackSend (color: '#FFFF00', message: "Creating and Starting Docker Image - RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-
-            sh '''
-            if ( docker ps|grep clixx-cont ) then
-               echo "Docker image exists, killing it"
-               docker stop clixx-cont
-               docker rm clixx-cont
-               docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION
-            else
-               docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION 
-            fi
-            '''
+  stage ('Starting Docker Image') {
+          steps {
+            slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+              sh '''
+              if ( docker ps|grep clixx-cont ) then
+                 echo "Docker image exists, killing it"
+                 docker stop clixx-cont
+                 docker rm clixx-cont
+                 docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION
+              else
+                 docker run --name clixx-cont  -p 80:80 -d clixx-image:$VERSION 
+              fi
+              '''
+          }
         }
-      }
   stage ('Restore CliXX Database') {
           steps {
-            // slackSend (color: '#FFFF00', message: "RESTORING CliXX DATABASE - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend (color: '#FFFF00', message: "RESTORE CliXX DATABASE -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
             python3 -m venv python3-virtualenv
             source python3-virtualenv/bin/activate
-            python3 -m pip install --upgrade pip
             python3 --version
-            pip3 install boto3 botocore boto ansible
+            pip3 install boto3 botocore boto
             ansible-playbook $WORKSPACE/deploy_db_ansible/deploy_db.yml
             deactivate
               '''
@@ -86,7 +68,7 @@ pipeline {
         }
   stage ('Configure DB Instance') {
           steps {
-            // slackSend (color: '#FFFF00', message: "CONFIGURE DB INSTANCE - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
                USERNAME='wordpressuser'
                PASSWORD='W3lcome123'
@@ -101,7 +83,7 @@ pipeline {
         }
       stage ('Tear Down CliXX Docker Image and Database') {
           steps {
-            // slackSend (color: '#FFFF00', message: "DEPLOYMENT TEAR DOWN PROMPT - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            slackSend (color: '#FFFF00', message: "TEAR DOWN CliXX DOCKER IMAGE AND DATABASE -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Tear Down Environment?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Tear Down Environment?', name: 'confirm'] ])
              }
@@ -119,7 +101,6 @@ pipeline {
         }
         stage ('Log Into ECR and push the newly created Docker') {
           steps {
-            // slackSend (color: '#FFFF00', message: "LOGGING INTO ECR AND PUSHING THE NEWLY CREATED DOCKER - -RUKAYAT : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
@@ -140,4 +121,3 @@ def getDockerPath(){
         def DockerHome= tool name: 'docker-inst', type: 'dockerTool'
         return DockerHome
     }
-    
