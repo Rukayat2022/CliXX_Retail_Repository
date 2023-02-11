@@ -4,11 +4,11 @@ pipeline {
         VERSION = "1.0.${BUILD_NUMBER}"
         PATH = "${PATH}:${getSonarPath()}:${getDockerPath()}"
         RUNNER = "RUKAYAT"
-        USERNAME = $username
-        PASSWORD = $password
-        DBNAME = $dname
-        SERVER_INSTANCE = $server_instance
-        ACCOUNT_ID = $account_id
+        USERNAME = '$username'
+        PASSWORD = '$password'
+        DBNAME = '$dname'
+        SERVER_INSTANCE = '$server_instance'
+        ACCOUNT_ID = '$account_id'
         
     }
     stages {
@@ -77,15 +77,15 @@ pipeline {
           steps {
             slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
-               USERNAME=$username
-               PASSWORD=$password
-               DBNAME=$dname
+               #USERNAME=${env.username}
+               #PASSWORD=${env.password}
+               #DBNAME=${env.dname}
                SERVER_IP=$(curl -s http://checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
-               SERVER_INSTANCE=$server_instance
-               echo "use $dname;" >> $WORKSPACE/db.setup
+               #SERVER_INSTANCE=${env.server_instance}
+               echo "use ${env.DBNAME};" >> $WORKSPACE/db.setup
                #echo "UPDATE wp_options SET option_value = '$SERVER_IP' WHERE option_value LIKE 'http%';">> $WORKSPACE/db.setup
                echo "UPDATE wp_options SET option_value = '$SERVER_IP' WHERE option_value REGEXP '^[0-9]{1,3}[:punct:][0-9]{1,3}[:punct:][0-9]{1,3}[:punct:][0-9]{1,3}$';">> $WORKSPACE/db.setup
-               mysql -u $USERNAME --password=$PASSWORD -h $SERVER_INSTANCE  -D  $DBNAME < $WORKSPACE/db.setup
+               mysql -u ${env.USERNAME} --password=${env.PASSWORD} -h ${env.SERVER_INSTANCE}  -D  ${env.DBNAME} < $WORKSPACE/db.setup
               '''
           }
         }
@@ -114,9 +114,9 @@ pipeline {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
               sh '''
-                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $account_id.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
-                docker tag clixx-image:$VERSION $account_id.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
-                docker push $account_id.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
+                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${env.account_id}.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
+                docker tag clixx-image:$VERSION ${env.account_id}.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
+                docker push ${env.account_id}.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
               '''
           }
         }
