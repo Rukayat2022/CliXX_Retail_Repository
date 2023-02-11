@@ -78,6 +78,8 @@ pipeline {
             slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
                #USERNAME=${env.username}
+               echo ${env.username}
+               echo ${dname}
                #PASSWORD=${env.password}
                #DBNAME=${env.dname}
                SERVER_IP=$(curl -s http://checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
