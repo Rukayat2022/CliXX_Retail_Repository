@@ -16,7 +16,7 @@ pipeline {
         withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]){
         withSonarQubeEnv('SonarQubeScanner') {
           sh " ${scannerHome}/bin/sonar-scanner \
-          -Dsonar.projectKey=CliXX-App-Mike   \
+          -Dsonar.projectKey=CliXX-App-Rukayat   \
           -Dsonar.login=${SONAR_TOKEN} "
         }
         }
@@ -77,7 +77,7 @@ pipeline {
                      string(credentialsId: 'username', variable: 'USERNAME'),
                      string(credentialsId: 'password', variable: 'PASSWORD'),
                      string(credentialsId: 'dbname', variable: 'DBNAME'),
-                     string(credentialsId: 'server_instance', variable: 'SERVER_INSTANCE')
+                     string(credentialsId: 'server_instance', variable: 'SERVER_INSTANCE'),
                      string(credentialsId: 'account_id', variable: 'account_id')
                      ]) {
 
