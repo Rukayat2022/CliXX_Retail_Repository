@@ -4,11 +4,6 @@ pipeline {
         VERSION = "1.0.${BUILD_NUMBER}"
         PATH = "${PATH}:${getSonarPath()}:${getDockerPath()}"
         RUNNER = "RUKAYAT"
-        USERNAME = '$username'
-        PASSWORD = '$password'
-        DBNAME = '$dname'
-        SERVER_INSTANCE = '$server_instance'
-        ACCOUNT_ID = '$account_id'
         
     }
     stages {
@@ -76,14 +71,23 @@ pipeline {
   stage ('Configure DB Instance') {
           steps {
             slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            script {
+                def userInput = input(id: 'confirm', message: 'Is the DataBase creation complete?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Complete?', name: 'confirm'] ])
+              }
+              withCredentials([
+                     string(credentialsId: 'username', variable: 'USERNAME'),
+                     string(credentialsId: 'password', variable: 'PASSWORD'),
+                     string(credentialsId: 'dbname', variable: 'DBNAME'),
+                     string(credentialsId: 'server_instance', variable: 'SERVER_INSTANCE')
+                     string(credentialsId: 'account_id', variable: 'account_id')
+                     ]) {
+
               sh '''
-               #USERNAME=${env.username}
-               #echo ${env.username}
-               #echo ${dname}
-               #PASSWORD=${env.password}
-               #DBNAME=$dname
+               USERNAME="${USERNAME}"
+               PASSWORD="${PASSWORD}"
+               DBNAME="${DBNAME}"
+               SERVER_INSTANCE="${SERVER_INSTANCE}"
                SERVER_IP=$(curl -s http://checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
-               #SERVER_INSTANCE=${env.server_instance}
                echo "use $DBNAME;" >> $WORKSPACE/db.setup
                #echo "UPDATE wp_options SET option_value = '$SERVER_IP' WHERE option_value LIKE 'http%';">> $WORKSPACE/db.setup
                echo "UPDATE wp_options SET option_value = '$SERVER_IP' WHERE option_value REGEXP '^[0-9]{1,3}[:punct:][0-9]{1,3}[:punct:][0-9]{1,3}[:punct:][0-9]{1,3}$';">> $WORKSPACE/db.setup
@@ -91,6 +95,7 @@ pipeline {
               '''
           }
         }
+  }
       stage ('Tear Down CliXX Docker Image and Database') {
           steps {
             slackSend (color: '#FFFF00', message: "TEAR DOWN CliXX DOCKER IMAGE AND DATABASE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
@@ -116,9 +121,9 @@ pipeline {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
               sh '''
-                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${env.account_id}.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
-                docker tag clixx-image:$VERSION ${env.account_id}.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
-                docker push ${env.account_id}.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
+                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $account_id.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
+                docker tag clixx-image:$VERSION $account_id.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
+                docker push $account_id.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
               '''
           }
         }
