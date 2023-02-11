@@ -76,7 +76,7 @@ pipeline {
               withCredentials([
                      string(credentialsId: 'username', variable: 'USERNAME'),
                      string(credentialsId: 'password', variable: 'PASSWORD'),
-                     string(credentialsId: 'dbname', variable: 'DBNAME'),
+                     string(credentialsId: 'dname', variable: 'DBNAME'),
                      string(credentialsId: 'server_instance', variable: 'SERVER_INSTANCE'),
                      string(credentialsId: 'account_id', variable: 'account_id')
                      ]) {
