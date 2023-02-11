@@ -78,16 +78,16 @@ pipeline {
             slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
                #USERNAME=${env.username}
-               echo ${env.username}
-               echo ${dname}
+               #echo ${env.username}
+               #echo ${dname}
                #PASSWORD=${env.password}
-               #DBNAME=${env.dname}
+               #DBNAME=$dname
                SERVER_IP=$(curl -s http://checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//')
                #SERVER_INSTANCE=${env.server_instance}
-               echo "use ${env.DBNAME};" >> $WORKSPACE/db.setup
+               echo "use $DBNAME;" >> $WORKSPACE/db.setup
                #echo "UPDATE wp_options SET option_value = '$SERVER_IP' WHERE option_value LIKE 'http%';">> $WORKSPACE/db.setup
                echo "UPDATE wp_options SET option_value = '$SERVER_IP' WHERE option_value REGEXP '^[0-9]{1,3}[:punct:][0-9]{1,3}[:punct:][0-9]{1,3}[:punct:][0-9]{1,3}$';">> $WORKSPACE/db.setup
-               mysql -u ${env.USERNAME} --password=${env.PASSWORD} -h ${env.SERVER_INSTANCE}  -D  ${env.DBNAME} < $WORKSPACE/db.setup
+               mysql -u $USERNAME --password=$PASSWORD -h $SERVER_INSTANCE  -D  $env.DBNAME < $WORKSPACE/db.setup
               '''
           }
         }
