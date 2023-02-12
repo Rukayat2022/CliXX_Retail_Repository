@@ -118,7 +118,7 @@ pipeline {
         }
         stage ('Log Into ECR and push the newly created Docker') {
           steps {
-            slackSend (color: '#FFFF00', message: "LOGGING INTO ECR AND PUSHING THE NEWLY CREATED DOCKER -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "LOGGING INTO ECR AND PUSHING THE NEWLY CREATED DOCKER -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
@@ -126,6 +126,8 @@ pipeline {
                 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
                 docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
                 docker push 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
+                docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:latest
+                docker push 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:latest
               '''
           }
         }
