@@ -123,19 +123,19 @@ pipeline {
              script {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
+              withCredentials([
+                     string(credentialsId: 'ecr_url', variable: 'ecr_url')
+                     ])
+                  {
               sh '''
-                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
-                docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
-                docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:latest
-                docker push 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
-                docker push 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:latest
-                #aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository
-                #docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
-                #docker push 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-$VERSION
-                #docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image:latest
-                #docker tag clixx-image:$VERSION 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:clixx-image-latest
-                #docker push 196880981857.dkr.ecr.us-east-1.amazonaws.com/clixx-repository:latest
+                ECR_URL="${ecr_url}"
+                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_URL
+                docker tag clixx-image:$VERSION $ECR_URL:clixx-image-$VERSION
+                docker tag clixx-image:$VERSION $ECR_URL:latest
+                docker push $ECR_URL:clixx-image-$VERSION
+                docker push $ECR_URL:latest
               '''
+              }
           }
         }
     }
