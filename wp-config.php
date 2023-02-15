@@ -28,9 +28,6 @@ define( 'DB_USER', 'wordpressuser' );
 /** MySQL database password */
 define( 'DB_PASSWORD', 'W3lcome123' );
 
-// /** MySQL hostname */
-// define( 'DB_HOST', 'wordpressdbyeni.cv9qx40jwoy8.us-east-1.rds.amazonaws.com' );
-
 /** MySQL hostname */
 define( 'DB_HOST', 'wordpressnewecr.cyk0nmsdaqxd.us-east-1.rds.amazonaws.com' );
 
