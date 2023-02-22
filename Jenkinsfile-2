@@ -6,7 +6,7 @@ pipeline {
         RUNNER = "RUKAYAT"
         
     }
-//     stages {
+    stages {
 //         stage ('Sonarcube Scan') {
 //         steps {
 //           slackSend (color: '#FFFF00', message: "STARTING SONARQUBE SCAN -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
