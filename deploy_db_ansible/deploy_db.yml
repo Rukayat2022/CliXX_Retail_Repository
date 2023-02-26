@@ -3,8 +3,8 @@
     hosts: localhost
     connection: local
     vars:
-      instance_id: retailclixx
-      db_snapshot: retailclixx
+      instance_id: wordpressdbyeni
+      db_snapshot: wordpressdbyeni
       security_group: sg-0de1a54eb33c2e424
     tasks:
        - name: Restore DB from snapshot
