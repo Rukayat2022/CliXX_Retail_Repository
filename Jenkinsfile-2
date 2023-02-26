@@ -32,7 +32,7 @@ pipeline {
 //         }
           stage ('Build Docker Image') {
           steps {
-            slackSend (color: '#FFFF00', message: "BUILD DOCKER IMAGE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "BUILD DOCKER IMAGE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             // script{
             //  dockerHome= tool 'docker-inst'
             // }
@@ -42,7 +42,7 @@ pipeline {
         }
   stage ('Starting Docker Image') {
           steps {
-            slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "STARTING DOCKER IMAGE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
               if ( docker ps|grep clixx-cont ) then
                  echo "Docker image exists, killing it"
@@ -57,7 +57,7 @@ pipeline {
         }
   stage ('Restore CliXX Database') {
           steps {
-            slackSend (color: '#FFFF00', message: "RESTORE CliXX DATABASE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "RESTORE CliXX DATABASE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
               sh '''
             python3 -m venv python3-virtualenv
             source python3-virtualenv/bin/activate
@@ -81,7 +81,7 @@ pipeline {
                      string(credentialsId: 'account_id', variable: 'account_id')
                      ]) {
 
-            slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "CONFIGURING DB INSTANCE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             
               sh '''
                USERNAME="${USERNAME}"
@@ -101,7 +101,7 @@ pipeline {
   }
       stage ('Tear Down CliXX Docker Image and Database') {
           steps {
-            slackSend (color: '#FFFF00', message: "TEAR DOWN CliXX DOCKER IMAGE AND DATABASE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "TEAR DOWN CliXX DOCKER IMAGE AND DATABASE -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Tear Down Environment?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Tear Down Environment?', name: 'confirm'] ])
              }
@@ -119,7 +119,7 @@ pipeline {
         }
         stage ('Log Into ECR and push the newly created Docker Image') {
           steps {
-            slackSend (color: '#FFFF00', message: "LOGGING INTO ECR AND PUSHING THE NEWLY CREATED DOCKER -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            // slackSend (color: '#FFFF00', message: "LOGGING INTO ECR AND PUSHING THE NEWLY CREATED DOCKER -${env.RUNNER} : Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
              script {
                 def userInput = input(id: 'confirm', message: 'Push Image To ECR?', parameters: [ [$class: 'BooleanParameterDefinition', defaultValue: false, description: 'Push to ECR?', name: 'confirm'] ])
              }
