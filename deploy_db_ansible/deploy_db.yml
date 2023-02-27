@@ -3,8 +3,8 @@
     hosts: localhost
     connection: local
     vars:
-      instance_id: clixxdb
-      db_snapshot: clixxdb
+      instance_id: wordpressdbecr
+      db_snapshot: wordpressdbecr
       security_group: sg-0de1a54eb33c2e424
     tasks:
        - name: Restore DB from snapshot
